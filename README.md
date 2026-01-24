@@ -7,6 +7,10 @@ food delivery experience.
 ### Prerequisites
 - Node.js 18+
 
+### Env vars
+- `VITE_API_URL=http://127.0.0.1:8000`
+- `VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...`
+
 ### Run locally
 ```
 cd D:\Code\GitHub\BELLABONA

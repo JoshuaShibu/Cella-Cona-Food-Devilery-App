@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+backend/.env
+backend/.venv/
+backend/bellabona.db
+backend/app/__pycache__/
+backend/app/**/*.pyc
+*.pyc
+*.pyo
+__pycache__/

@@ -45,7 +45,10 @@ class Dish(DishBase):
 
 
 class OrderItemBase(BaseModel):
-    dish_id: int
+    dish_id: Optional[int] = None
+    name: Optional[str] = None
+    unit_price: Optional[float] = None
+    tag: Optional[str] = None
     quantity: int = 1
 
 
@@ -78,3 +81,7 @@ class Order(OrderBase):
 
     class Config:
         from_attributes = True
+
+
+class PaymentIntentCreate(BaseModel):
+    amount: int

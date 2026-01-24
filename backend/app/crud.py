@@ -37,14 +37,25 @@ def create_order(db: Session, order: schemas.OrderCreate) -> models.Order:
     db.flush()
 
     for item in order.items:
-        dish = get_dish(db, item.dish_id)
+        dish = None
+        if item.dish_id is not None:
+            dish = get_dish(db, item.dish_id)
+        if dish is None and item.name and item.unit_price is not None:
+            dish = models.Dish(
+                name=item.name,
+                price=item.unit_price,
+                category=item.tag,
+                is_available=True,
+            )
+            db.add(dish)
+            db.flush()
         if dish is None:
-            raise ValueError(f"Dish {item.dish_id} not found")
+            raise ValueError("Dish not found and no fallback details provided")
         db_item = models.OrderItem(
             order_id=db_order.id,
             dish_id=dish.id,
             quantity=item.quantity,
-            unit_price=dish.price,
+            unit_price=item.unit_price if item.unit_price is not None else dish.price,
         )
         db.add(db_item)
 

@@ -7,9 +7,13 @@
    - PowerShell: `.venv\Scripts\Activate.ps1`
 3) Install dependencies
    - `pip install -r requirements.txt`
-4) Run the API
+4) Set env vars
+   - Create `backend/.env` with:
+     - `STRIPE_SECRET_KEY=sk_test_...`
+     - Optional: `CORS_ORIGINS=http://localhost:5173`
+5) Run the API
    - `uvicorn app.main:app --reload`
-5) Open docs
+6) Open docs
    - `http://127.0.0.1:8000/docs`
 
 ## What this backend provides
