@@ -598,6 +598,10 @@ export default function App() {
             <button className="button ghost">Gratis testen</button>
             <button className="button primary">Anmelden</button>
           </div>
+          <Link className="nav-cart" to="/cart" aria-label="View cart">
+            <span className="nav-cart-icon">🛒</span>
+            <span className="nav-cart-count">{cartCount}</span>
+          </Link>
         </nav>
       </header>
 
