@@ -28,6 +28,8 @@ class DishBase(BaseModel):
     description: Optional[str] = None
     price: float
     category: Optional[str] = None
+    rating: Optional[float] = None
+    tag: Optional[str] = None
     image_url: Optional[str] = None
     is_available: bool = True
 
@@ -47,8 +49,7 @@ class Dish(DishBase):
 class OrderItemBase(BaseModel):
     dish_id: Optional[int] = None
     name: Optional[str] = None
-    unit_price: Optional[float] = None
-    tag: Optional[str] = None
+    unit_price: float = 0.0
     quantity: int = 1
 
 
@@ -58,7 +59,7 @@ class OrderItemCreate(OrderItemBase):
 
 class OrderItem(OrderItemBase):
     id: int
-    unit_price: float
+    unit_price: float = 0.0
 
     class Config:
         from_attributes = True

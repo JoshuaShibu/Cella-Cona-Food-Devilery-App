@@ -1,11 +1,54 @@
+# ── Environment variables ─────────────────────
+# Never commit real .env files.
+# Commit only .env.example files.
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.*
+!backend/.env.example
+!.env.example
+
+
+# ── Node ──────────────────────────────────────
 node_modules/
 dist/
-.env
-backend/.env
+.vite/
+
+
+# ── Python ────────────────────────────────────
 backend/.venv/
-backend/bellabona.db
-backend/app/__pycache__/
-backend/app/**/*.pyc
+__pycache__/
 *.pyc
 *.pyo
-__pycache__/
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+
+# ── Database ──────────────────────────────────
+# Local SQLite leftover from early dev (now using Postgres)
+backend/bellabona.db
+backend/*.db
+
+# Alembic — commit migrations but not the compiled cache
+backend/alembic/versions/__pycache__/
+
+
+# ── Docker ────────────────────────────────────
+# Don't commit local volume data if you ever bind-mount
+docker-volumes/
+
+
+# ── OS / editor ───────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

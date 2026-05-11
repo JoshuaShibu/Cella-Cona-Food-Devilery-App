@@ -7,14 +7,15 @@ from .database import Base
 
 
 class Dish(Base):
-    __tablename__ = "dishes"
-
+    __tablename__ = "dishes" 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     description: Mapped[str | None] = mapped_column(Text)
     price: Mapped[float] = mapped_column(Float)
     category: Mapped[str | None] = mapped_column(String(80))
     image_url: Mapped[str | None] = mapped_column(String(255))
+    tag: Mapped[str | None] = mapped_column(String(80))
+    rating: Mapped[float | None] = mapped_column(Float)
     is_available: Mapped[bool] = mapped_column(default=True)
 
     details: Mapped["DishDetail"] = relationship(

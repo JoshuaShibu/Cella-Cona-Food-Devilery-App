@@ -1,4 +1,6 @@
-from sqlalchemy.orm import Session
+"""Database CRUD operations for dishes and orders."""
+
+from sqlalchemy.orm import Session  # pylint: disable=import-error
 
 from . import models, schemas
 
