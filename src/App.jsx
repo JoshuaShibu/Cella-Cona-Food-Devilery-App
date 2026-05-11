@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import HomePage from "./pages/Home.page";
 import CartPage from "./pages/Cart.page";
 import ThemeToggle from "./components/ThemeToggle";
+import LanguageToggle from "./components/LanguageToggle";
 
 export default function App() {
+  const { t } = useTranslation();
   const [cartItems, setCartItems] = useState([]);
   const location = useLocation();
   const isHome = location.pathname === "/";
@@ -59,17 +62,18 @@ export default function App() {
         <nav className="nav">
           <div className="logo">Cella<span>&amp;</span>Cona</div>
           <div className="nav-links">
-            <a href="#menu">Daily Lunch</a>
-            <a href="#features">Business Catering</a>
-            <a href="#solutions">Unser Menü</a>
-            <a href="#footer">Mehr</a>
+            <a href="#menu">{t("nav.dailyLunch")}</a>
+            <a href="#features">{t("nav.businessCatering")}</a>
+            <a href="#solutions">{t("nav.ourMenu")}</a>
+            <a href="#footer">{t("nav.more")}</a>
           </div>
           <div className="nav-actions">
             <ThemeToggle />
-            <button className="button ghost">Gratis testen</button>
-            <button className="button primary">Anmelden</button>
+            <LanguageToggle />
+            <button className="button ghost">{t("nav.tryFree")}</button>
+            <button className="button primary">{t("nav.signIn")}</button>
           </div>
-          <Link className="nav-cart" to="/cart" aria-label="View cart">
+          <Link className="nav-cart" to="/cart" aria-label={t("nav.viewCart")}>
             <span className="nav-cart-icon">🛒</span>
             <span className="nav-cart-count">{cartCount}</span>
           </Link>
@@ -102,13 +106,13 @@ export default function App() {
       <footer className="site-footer" id="footer">
         <div>
           <div className="logo">Cella<span>&amp;</span>Cona</div>
-          <p>questions@cellacona.com</p>
+          <p>{t("footer.email")}</p>
         </div>
         <div className="footer-links">
-          <a href="#">Impressum</a>
-          <a href="#">AGB für Firmenkunden</a>
-          <a href="#">Datenschutz</a>
-          <a href="#">Karriere</a>
+          <a href="#">{t("footer.imprint")}</a>
+          <a href="#">{t("footer.termsBusiness")}</a>
+          <a href="#">{t("footer.privacy")}</a>
+          <a href="#">{t("footer.careers")}</a>
         </div>
       </footer>
     </div>

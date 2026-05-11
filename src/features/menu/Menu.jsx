@@ -9,18 +9,12 @@ import {
     Tooltip,
     Button
   } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
   
-const formatPrice = (value) =>
-value.toLocaleString("de-DE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-});
-
-
 export default function Menu ({addToCart}) {
+    const { t, i18n } = useTranslation();
     const { getDishes } = dishesServices();
     const [dishes, setDishes] = useState([]);
     useEffect(() => {
@@ -30,17 +24,25 @@ export default function Menu ({addToCart}) {
         };
         fetchDishes();
     }, []);
+
+    const locale = i18n.language === "de" ? "de-DE" : "en-US";
+    const formatPrice = (value) =>
+      new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+      }).format(value);
     
     return (
         <section className="menu" id="menu">
         <div className="section-head">
           <div>
-            <p className="eyebrow">Beliebte Gerichte</p>
-            <h2>Fast &amp; Fresh, inspiriert vom Dribbble Style</h2>
+            <p className="eyebrow">{t("menu.popularDishes")}</p>
+            <h2>{t("menu.title")}</h2>
           </div>
           <div className="search">
-            <input placeholder="Suche nach Gerichten..." />
-            <button className="button primary">Suchen</button>
+            <input placeholder={t("menu.searchPlaceholder")} />
+            <button className="button primary">{t("menu.search")}</button>
           </div>
         </div>
         <div className="menu-grid">
@@ -49,7 +51,7 @@ export default function Menu ({addToCart}) {
             <CardMedia
               component="img"
               image={item.image_url}
-              alt={item.title}
+              alt={item.name}
             />
         
             <CardContent className="menu-card-container">
@@ -65,7 +67,7 @@ export default function Menu ({addToCart}) {
         
         
               <Typography variant="body2">
-                ⭐ {item.rating} · 300+ reviews
+                ⭐ {item.rating} · {t("menu.ratingSuffix")}
               </Typography>
             </CardContent>
         
@@ -78,7 +80,7 @@ export default function Menu ({addToCart}) {
                 variant="contained"
                 onClick={() => addToCart(item)}
               >
-                Add to cart
+                {t("menu.addToCart")}
               </Button>
             </CardActions>
           </Card>

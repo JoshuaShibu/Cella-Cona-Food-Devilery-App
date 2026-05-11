@@ -2,21 +2,24 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link, useNavigate } from "react-router-dom";
-
-const formatPrice = (value) =>
-  value.toLocaleString("de-DE", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-  });
+import { useTranslation } from "react-i18next";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
 
 function CheckoutForm({ total, onSuccess }) {
+  const { t, i18n } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
+
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const formatPrice = (value) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+    }).format(value);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,7 +38,7 @@ function CheckoutForm({ total, onSuccess }) {
 
     if (result.error) {
       setStatus("error");
-      setError(result.error.message || "Payment failed. Try again.");
+      setError(result.error.message || t("cart.paymentFailed"));
       return;
     }
     onSuccess();
@@ -52,10 +55,10 @@ function CheckoutForm({ total, onSuccess }) {
         {status === "processing" ? (
           <span className="payment-processing">
             <span className="spinner" aria-hidden="true" />
-            Processing...
+            {t("cart.paymentProcessing")}
           </span>
         ) : (
-          `Pay ${formatPrice(total)}`
+          t("cart.payWithAmount", { amount: formatPrice(total) })
         )}
       </button>
       {status === "error" && <p className="payment-error">{error}</p>}
@@ -64,10 +67,19 @@ function CheckoutForm({ total, onSuccess }) {
 }
 
 function PaymentModal({ total, onClose, onSuccess }) {
+  const { t, i18n } = useTranslation();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const formatPrice = (value) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+    }).format(value);
 
   const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "";
@@ -78,7 +90,7 @@ function PaymentModal({ total, onClose, onSuccess }) {
         setLoading(true);
         setError("");
         if (!stripeKey) {
-          setError("Add VITE_STRIPE_PUBLISHABLE_KEY to enable Stripe checkout.");
+          setError(t("cart.paymentAddKey"));
           return;
         }
         const response = await fetch(`${apiUrl}/create-payment-intent`, {
@@ -87,18 +99,18 @@ function PaymentModal({ total, onClose, onSuccess }) {
           body: JSON.stringify({ amount: Math.round(total * 100) }),
         });
         if (!response.ok) {
-          throw new Error("Unable to start Stripe checkout.");
+          throw new Error(t("cart.paymentStartFailed"));
         }
         const data = await response.json();
         setClientSecret(data.clientSecret);
       } catch (err) {
-        setError(err.message || "Stripe setup failed.");
+        setError(err.message || t("cart.paymentSetupFailed"));
       } finally {
         setLoading(false);
       }
     };
     createIntent();
-  }, [apiUrl, stripeKey, total]);
+  }, [apiUrl, stripeKey, t, total]);
 
   useEffect(() => {
     if (!showSuccess) {
@@ -126,14 +138,14 @@ function PaymentModal({ total, onClose, onSuccess }) {
         {!showSuccess && (
           <div className="payment-header">
             <div>
-              <p className="eyebrow">Stripe checkout</p>
-              <h3>Complete your payment</h3>
+              <p className="eyebrow">{t("cart.paymentEyebrow")}</p>
+              <h3>{t("cart.paymentTitle")}</h3>
             </div>
             <button
               className="payment-close"
               type="button"
               onClick={onClose}
-              aria-label="Close payment"
+              aria-label={t("cart.paymentClose")}
             >
               ×
             </button>
@@ -142,7 +154,7 @@ function PaymentModal({ total, onClose, onSuccess }) {
         <div className="payment-body">
           {!showSuccess && (
             <div className="payment-summary">
-              <span>Total</span>
+              <span>{t("cart.total")}</span>
               <strong>{formatPrice(total)}</strong>
             </div>
           )}
@@ -150,15 +162,15 @@ function PaymentModal({ total, onClose, onSuccess }) {
             <div className="payment-success-card">
               <div className="payment-success">
                 <span className="success-check" aria-hidden="true" />
-                <span>Payment received. Thank you!</span>
+                <span>{t("cart.paymentReceived")}</span>
               </div>
-              <p className="payment-redirect">Taking you back to the menu…</p>
+              <p className="payment-redirect">{t("cart.paymentRedirect")}</p>
               <button className="button primary" type="button" onClick={onClose}>
-                Close
+                {t("cart.close")}
               </button>
             </div>
           ) : loading ? (
-            <p className="payment-note">Preparing Stripe checkout…</p>
+            <p className="payment-note">{t("cart.paymentPreparing")}</p>
           ) : error ? (
             <p className="payment-error">{error}</p>
           ) : (
@@ -174,7 +186,7 @@ function PaymentModal({ total, onClose, onSuccess }) {
           )}
           {!showSuccess && (
             <p className="payment-note">
-              Stripe test mode is enabled. Use a test card like 4242 4242 4242 4242.
+              {t("cart.testModeNote")}
             </p>
           )}
         </div>
@@ -184,6 +196,7 @@ function PaymentModal({ total, onClose, onSuccess }) {
 }
 
 export default function CartPage({ cartItems, subtotal, createOrder, clearCart }) {
+  const { t, i18n } = useTranslation();
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -209,28 +222,36 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
     }
   };
 
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const formatPrice = (value) =>
+    new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 2,
+    }).format(value);
+
   return (
     <section className="cart" id="cart">
       <div className="section-head">
         <div>
-          <p className="eyebrow">Your cart</p>
-          <h2>Order summary</h2>
+          <p className="eyebrow">{t("cart.yourCart")}</p>
+          <h2>{t("cart.orderSummary")}</h2>
         </div>
         <Link className="cart-back" to="/">
-          Continue shopping
+          {t("cart.continueShopping")}
         </Link>
       </div>
       <div className="cart-grid">
         <div className="cart-items">
           {cartItems.length === 0 ? (
-            <p className="cart-empty">Your cart is empty. Add dishes first.</p>
+            <p className="cart-empty">{t("cart.empty")}</p>
           ) : (
             cartItems.map((item) => (
               <div key={item.title} className="cart-row">
                 <div className="cart-row-info">
                   <h4>{item.title}</h4>
                   <span>
-                    {formatPrice(item.price)} · Qty {item.quantity}
+                    {formatPrice(item.price)} · {t("cart.qtyShort")} {item.quantity}
                   </span>
                 </div>
                 <strong>{formatPrice(item.price * item.quantity)}</strong>
@@ -239,9 +260,9 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
           )}
         </div>
         <aside className="cart-summary">
-          <h3>Summary</h3>
+          <h3>{t("cart.summary")}</h3>
           <label className="cart-field">
-            Name
+            {t("cart.name")}
             <input
               type="text"
               placeholder="Alex Doe"
@@ -250,7 +271,7 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
             />
           </label>
           <label className="cart-field">
-            Email
+            {t("cart.email")}
             <input
               type="email"
               placeholder="alex@example.com"
@@ -259,15 +280,15 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
             />
           </label>
           <div className="cart-summary-row">
-            <span>Subtotal</span>
+            <span>{t("cart.subtotal")}</span>
             <strong>{formatPrice(subtotal)}</strong>
           </div>
           <div className="cart-summary-row">
-            <span>Delivery</span>
-            <strong>Free</strong>
+            <span>{t("cart.delivery")}</span>
+            <strong>{t("cart.free")}</strong>
           </div>
           <div className="cart-summary-total">
-            <span>Total</span>
+            <span>{t("cart.total")}</span>
             <strong>{formatPrice(subtotal)}</strong>
           </div>
           <button
@@ -276,14 +297,14 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
             onClick={() => setIsPaymentOpen(true)}
             disabled={!canCheckout}
           >
-            Checkout
+            {t("cart.checkout")}
           </button>
-          {orderStatus === "saving" && <p className="order-status">Saving your order…</p>}
+          {orderStatus === "saving" && <p className="order-status">{t("cart.saving")}</p>}
           {orderStatus === "saved" && (
-            <p className="order-status success">Payment received. Order saved.</p>
+            <p className="order-status success">{t("cart.saved")}</p>
           )}
           {orderStatus === "error" && (
-            <p className="order-status error">Could not save order. Please try again.</p>
+            <p className="order-status error">{t("cart.saveError")}</p>
           )}
         </aside>
       </div>
