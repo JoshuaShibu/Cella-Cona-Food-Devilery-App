@@ -15,11 +15,13 @@ import { useState } from "react";
   
 export default function Menu ({addToCart}) {
     const { t, i18n } = useTranslation();
-    const { getDishes } = dishesServices();
     const [dishes, setDishes] = useState([]);
+    const [count, setCount] = useState(0);
+    
     useEffect(() => {
+        setCount(count+1);
         const fetchDishes = async () => {
-            const dishes = await getDishes();
+            const dishes = await dishesServices();
             setDishes(dishes);
         };
         fetchDishes();
