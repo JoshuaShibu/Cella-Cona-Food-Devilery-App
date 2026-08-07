@@ -3,7 +3,7 @@ from sqlalchemy.orm.session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./bellabona.db")
+DATABASE_URL = os.getenv("DATABASE_URL") or "sqlite:///./bellabona.db"
 
 # Railway gives postgres:// but SQLAlchemy needs postgresql://
 if DATABASE_URL.startswith("postgres://"):
