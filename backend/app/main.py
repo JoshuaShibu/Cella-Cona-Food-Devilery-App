@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from .database import SessionLocal, engine
 from . import models, schemas, crud
+from typing import Optional
 
 load_dotenv()
 models.Base.metadata.create_all(bind=engine)
@@ -48,8 +49,28 @@ def health_check():
 
 
 @app.get("/dishes", response_model=list[schemas.Dish])
-def list_dishes(db: Session = Depends(get_db)):
-    return crud.get_dishes(db)
+def list_dishes(
+    category: Optional[str] = None,
+    tag: Optional[str] = None,
+    search: Optional[str] = None,
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None,
+    is_available: Optional[bool] = None,
+    sort_by: str = "name",
+    order: str = "asc",
+    db: Session = Depends(get_db),
+):
+    return crud.get_dishes(
+        db,
+        category=category,
+        tag=tag,
+        search=search,
+        min_price=min_price,
+        max_price=max_price,
+        is_available=is_available,
+        sort_by=sort_by,
+        order=order,
+    )
 
 
 @app.get("/dishes/{dish_id}", response_model=schemas.Dish)
@@ -105,12 +126,12 @@ def create_payment_intent(payload: schemas.PaymentIntentCreate):
             automatic_payment_methods={"enabled": True},
         )
         return {"clientSecret": intent.client_secret}
-    except stripe.error.APIConnectionError as exc:
+    except stripe.APIConnectionError as exc:
         raise HTTPException(
             status_code=504,
             detail="Stripe connection timed out. Check network access.",
         ) from exc
-    except stripe.error.StripeError as exc:
+    except stripe.StripeError as exc:
         raise HTTPException(
             status_code=502,
             detail=f"Stripe error: {exc.user_message or str(exc)}",
