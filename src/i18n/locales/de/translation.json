@@ -68,7 +68,9 @@
     "decreaseQty": "Menge verringern",
     "increaseQty": "Menge erhöhen",
     "noResults": "Keine Gerichte entsprechen deinen Filtern.",
-    "loadError": "Menü konnte nicht geladen werden. Bitte versuche es erneut."
+    "loadError": "Menü konnte nicht geladen werden. Bitte versuche es erneut.",
+    "loadMore": "Mehr laden",
+    "loadingMore": "Lädt…"
   },
   "filters": {
     "all": "Alle",
@@ -107,7 +109,9 @@
     "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
     "loadingReading": "Deine Anfrage wird gelesen…",
     "loadingMatching": "Gerichte werden abgeglichen…",
-    "loadingRanking": "Beste Treffer werden sortiert…"
+    "loadingRanking": "Beste Treffer werden sortiert…",
+    "cartItems": "{{count}} Artikel",
+    "goToCheckout": "Zur Kasse"
   },
   "recommendations": {
     "eyebrow": "Für dich ausgewählt",

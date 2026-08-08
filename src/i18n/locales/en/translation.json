@@ -68,7 +68,9 @@
     "decreaseQty": "Decrease quantity",
     "increaseQty": "Increase quantity",
     "noResults": "No dishes match your filters.",
-    "loadError": "Couldn't load the menu. Please try again."
+    "loadError": "Couldn't load the menu. Please try again.",
+    "loadMore": "Load more",
+    "loadingMore": "Loading…"
   },
   "filters": {
     "all": "All",
@@ -107,7 +109,9 @@
     "error": "Something went wrong. Please try again.",
     "loadingReading": "Reading your request…",
     "loadingMatching": "Matching dishes…",
-    "loadingRanking": "Ranking the best picks…"
+    "loadingRanking": "Ranking the best picks…",
+    "cartItems": "{{count}} items",
+    "goToCheckout": "Go to checkout"
   },
   "recommendations": {
     "eyebrow": "Picked for you",

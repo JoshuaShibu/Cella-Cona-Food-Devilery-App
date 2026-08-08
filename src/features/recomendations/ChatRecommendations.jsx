@@ -20,6 +20,8 @@ const LOADING_KEYS = [
   "chat.loadingRanking",
 ];
 
+const PAGE_SIZE = 8;
+
 /**
  * Chat-style recommendations. The user types a free-text request; the current
  * panel slides out, a loader runs, and the results slide in.
@@ -32,6 +34,7 @@ export default function ChatRecommendations({
   removeFromCart,
   cartItems = [],
   onClose,
+  onCheckout,
 }) {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -39,7 +42,10 @@ export default function ChatRecommendations({
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loadingLine, setLoadingLine] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const timers = useRef([]);
+  const queryRef = useRef("");
 
   // Same cartItems -> { [dishId]: quantity } shape Menu.jsx uses, so the
   // stepper here reflects whatever is already in the cart.
@@ -50,6 +56,15 @@ export default function ChatRecommendations({
         return map;
       }, {}),
     [cartItems]
+  );
+
+  // Drives the sticky cart bar — lets people check out without first
+  // closing the drawer and hunting for the header's cart icon, which sits
+  // behind the drawer's own backdrop while it's open.
+  const cartCount = cartItems.reduce((sum, entry) => sum + entry.quantity, 0);
+  const cartSubtotal = cartItems.reduce(
+    (sum, entry) => sum + entry.price * entry.quantity,
+    0
   );
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -75,9 +90,11 @@ export default function ChatRecommendations({
     const trimmed = query.trim();
     if (!trimmed) return;
 
+    queryRef.current = trimmed;
     setError(null);
     setPhase("exiting");
     setLoadingLine(0);
+    setHasMore(false);
 
     const exitDelay = setTimeout(() => setPhase("loading"), 340);
     timers.current.push(exitDelay);
@@ -86,7 +103,12 @@ export default function ChatRecommendations({
       const response = await fetch(`${apiUrl}/recommendations/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: trimmed, user_id: userId, limit: 8 }),
+        body: JSON.stringify({
+          query: trimmed,
+          user_id: userId,
+          limit: PAGE_SIZE,
+          offset: 0,
+        }),
       });
       if (!response.ok) throw new Error("Request failed");
       const json = await response.json();
@@ -94,6 +116,7 @@ export default function ChatRecommendations({
       // Hold the loader briefly so it doesn't flash on a fast response.
       const settle = setTimeout(() => {
         setData(json);
+        setHasMore(json.results.length === PAGE_SIZE);
         setPhase("results");
       }, 700);
       timers.current.push(settle);
@@ -106,12 +129,38 @@ export default function ChatRecommendations({
     }
   };
 
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const response = await fetch(`${apiUrl}/recommendations/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: queryRef.current,
+          user_id: userId,
+          limit: PAGE_SIZE,
+          offset: data?.results.length ?? 0,
+        }),
+      });
+      if (!response.ok) throw new Error("Request failed");
+      const json = await response.json();
+      setData((prev) => ({ ...json, results: [...prev.results, ...json.results] }));
+      setHasMore(json.results.length === PAGE_SIZE);
+    } catch {
+      setError(t("chat.error"));
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
   const reset = () => {
     setPhase("exiting");
     const id = setTimeout(() => {
       setData(null);
       setInput("");
       setError(null);
+      setHasMore(false);
       setPhase("idle");
     }, 340);
     timers.current.push(id);
@@ -128,6 +177,7 @@ export default function ChatRecommendations({
   return (
     <ThemeProvider theme={recTheme}>
     <div className="rec-drawer-content">
+    <div className="rec-drawer-scroll">
       <div className="rec-chat-head">
         <div className="rec-chat-head-text">
           <p className="eyebrow">{t("chat.eyebrow")}</p>
@@ -318,6 +368,18 @@ export default function ChatRecommendations({
                 );
               })}
             </div>
+
+            {hasMore && (
+              <div className="menu-load-more">
+                <Button
+                  variant="outlined"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? t("menu.loadingMore") : t("menu.loadMore")}
+                </Button>
+              </div>
+            )}
           </div>
         )}
 
@@ -330,6 +392,27 @@ export default function ChatRecommendations({
           </div>
         )}
       </div>
+    </div>
+
+    {cartCount > 0 && (
+      <div className="rec-cart-bar">
+        <div className="rec-cart-bar-info">
+          <span key={cartCount} className="rec-cart-bar-count">
+            {t("chat.cartItems", { count: cartCount })}
+          </span>
+          <span key={cartSubtotal} className="rec-cart-bar-total">
+            {formatPrice(cartSubtotal)}
+          </span>
+        </div>
+        <Button
+          variant="contained"
+          className="rec-cart-bar-cta"
+          onClick={onCheckout}
+        >
+          {t("chat.goToCheckout")}
+        </Button>
+      </div>
+    )}
     </div>
     </ThemeProvider>
   );

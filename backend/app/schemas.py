@@ -146,6 +146,7 @@ class ChatQuery(BaseModel):
     query: str
     user_id: Optional[int] = None
     limit: int = 8
+    offset: int = 0
 
 
 class ChatRecommendationResponse(BaseModel):

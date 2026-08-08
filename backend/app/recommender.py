@@ -304,11 +304,12 @@ def recommend(
     db: Session,
     user_id: int | None = None,
     limit: int = 10,
+    offset: int = 0,
     meal_time: str | None = None,
     weather: str | None = None,
     temp_celsius: float | None = None,
     day_of_week: int | None = None,
-    exclude_ordered: bool = True, 
+    exclude_ordered: bool = True,
     query_filters: dict | None = None,
 ) -> list[dict]:
     """
@@ -399,7 +400,7 @@ def recommend(
         )
 
     results.sort(key=lambda r: r["score"], reverse=True)
-    return results[:limit]
+    return results[offset : offset + limit]
 
 
 def similar_dishes(db: Session, dish_id: int, limit: int = 6) -> list[dict]:

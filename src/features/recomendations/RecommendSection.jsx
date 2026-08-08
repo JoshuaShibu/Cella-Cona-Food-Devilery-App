@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Drawer, Button } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChatRecommendations from "./ChatRecommendations";
 import { recTheme } from "./recTheme";
@@ -18,6 +19,12 @@ export default function RecommendSection({
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const goToCheckout = () => {
+    setOpen(false);
+    navigate("/cart");
+  };
 
   return (
     <ThemeProvider theme={recTheme}>
@@ -62,6 +69,7 @@ export default function RecommendSection({
             removeFromCart={removeFromCart}
             cartItems={cartItems}
             onClose={() => setOpen(false)}
+            onCheckout={goToCheckout}
           />
         </Drawer>
       </section>

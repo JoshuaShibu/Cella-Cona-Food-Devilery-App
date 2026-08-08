@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import FilterBar from "../../components/filterBar/FilterBar";
 
 const DEFAULT_FILTERS = { sort_by: "name", order: "asc" };
+const PAGE_SIZE = 12;
 
 export default function Menu({ addToCart, removeFromCart, cartItems = [] }) {
   const { t, i18n } = useTranslation();
@@ -20,6 +21,8 @@ export default function Menu({ addToCart, removeFromCart, cartItems = [] }) {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState(null);
 
   const quantities = useMemo(
@@ -41,15 +44,18 @@ export default function Menu({ addToCart, removeFromCart, cartItems = [] }) {
     return () => clearTimeout(debounceRef.current);
   }, [searchInput]);
 
-  // Filtering and sorting happen server-side, so this refetches on any change.
+  // Filtering and sorting happen server-side, so this refetches from the
+  // start on any change, resetting whatever was loaded via "Load more".
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    dishesServices(filters)
+    dishesServices({ ...filters, limit: PAGE_SIZE, offset: 0 })
       .then((data) => {
-        if (!cancelled) setDishes(data);
+        if (cancelled) return;
+        setDishes(data);
+        setHasMore(data.length === PAGE_SIZE);
       })
       .catch(() => {
         if (!cancelled) setError(t("menu.loadError"));
@@ -62,6 +68,18 @@ export default function Menu({ addToCart, removeFromCart, cartItems = [] }) {
       cancelled = true;
     };
   }, [filters, t]);
+
+  const loadMore = () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    dishesServices({ ...filters, limit: PAGE_SIZE, offset: dishes.length })
+      .then((data) => {
+        setDishes((prev) => [...prev, ...data]);
+        setHasMore(data.length === PAGE_SIZE);
+      })
+      .catch(() => setError(t("menu.loadError")))
+      .finally(() => setLoadingMore(false));
+  };
 
   const locale = i18n.language === "de" ? "de-DE" : "en-US";
   const formatPrice = (value) =>
@@ -214,6 +232,18 @@ export default function Menu({ addToCart, removeFromCart, cartItems = [] }) {
           );
         })}
       </div>
+
+      {!loading && !error && hasMore && (
+        <div className="menu-load-more">
+          <Button
+            variant="outlined"
+            onClick={loadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? t("menu.loadingMore") : t("menu.loadMore")}
+          </Button>
+        </div>
+      )}
     </section>
   );
 }

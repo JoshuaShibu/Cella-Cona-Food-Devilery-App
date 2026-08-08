@@ -74,15 +74,25 @@
   box-shadow: -18px 0 44px -20px rgba(0, 0, 0, 0.6) !important;
 }
 
+/* Flex shell: .rec-drawer-scroll is the only part that scrolls, so the
+   cart bar below it can stay pinned to the bottom of the drawer instead
+   of scrolling away with the results. */
 .rec-drawer-content {
   height: 100%;
-  overflow-y: auto;
   box-sizing: border-box;
-  padding: 2rem 2rem 2.25rem;
+  display: flex;
+  flex-direction: column;
   /* Drawer is a fixed-dark surface regardless of the site's theme — same
      fixed-ink approach as .rec-teaser-card above, just flipped to light
      ink on a dark ground. */
   color: #f5f1ec;
+}
+
+.rec-drawer-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 2rem 2rem 1.5rem;
 }
 
 /* .menu-price is shared with Menu.jsx's cards, where it correctly tracks
@@ -155,6 +165,73 @@
 
 .rec-drawer-close:hover {
   background: rgba(216, 90, 48, 0.26);
+}
+
+/* --- Cart bar — pinned under .rec-drawer-scroll, only rendered once the
+   cart holds something. Lets people check out without first closing the
+   drawer to reach the header's cart icon (which sits behind the drawer's
+   own backdrop while it's open). --- */
+.rec-cart-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: #211a15;
+  border-top: 1px solid rgba(245, 241, 236, 0.1);
+  animation: rec-cart-bar-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes rec-cart-bar-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.rec-cart-bar-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.rec-cart-bar-count {
+  font-size: 0.72rem;
+  color: rgba(245, 241, 236, 0.6);
+}
+
+.rec-cart-bar-total {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  /* Reuses Menu.jsx's qty-bump keyframe (styles.css) — the count/total
+     are re-keyed on every change so the animation replays each time. */
+  animation: menu-qty-bump 0.18s ease;
+}
+
+.rec-cart-bar-cta.MuiButton-root {
+  flex: none;
+  border-radius: 999px !important;
+  padding: 0.65rem 1.15rem !important;
+  font: inherit;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  white-space: nowrap;
+  background: #d85a30 !important;
+  box-shadow: none !important;
+}
+
+.rec-cart-bar-cta.MuiButton-root:hover {
+  background: #b8481f !important;
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rec-cart-bar,
+  .rec-cart-bar-total {
+    animation: none;
+  }
 }
 
 /* --- Input bar: stays a light/cream pill against the dark drawer, so it
@@ -514,7 +591,8 @@
 @media (max-width: 720px) {
   .rec-teaser-card { padding: 1.5rem 1.25rem; flex-direction: column; align-items: flex-start; border-radius: 18px; }
   .rec-teaser-button.MuiButton-root { width: 100%; }
-  .rec-drawer-content { padding: 1.5rem 1.25rem 1.75rem; }
+  .rec-drawer-scroll { padding: 1.5rem 1.25rem 1.25rem; }
+  .rec-cart-bar { padding: 0.85rem 1.25rem; }
   .rec-chat-bar { flex-wrap: wrap; border-radius: 20px; padding: 0.75rem; }
   .rec-chat-send { width: 100%; }
 }

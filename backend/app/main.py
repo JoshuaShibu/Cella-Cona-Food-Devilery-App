@@ -208,6 +208,7 @@ def chat_recommendations(
         db,
         user_id=payload.user_id,
         limit=payload.limit,
+        offset=payload.offset,
         meal_time=ctx.get("meal_time"),
         weather=ctx.get("weather"),
         query_filters=filters,
