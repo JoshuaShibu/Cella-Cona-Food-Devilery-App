@@ -13,11 +13,16 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 
   
-export default function Menu ({addToCart}) {
+export default function Menu ({addToCart, removeFromCart, cartItems = []}) {
     const { t, i18n } = useTranslation();
     const [dishes, setDishes] = useState([]);
     const [count, setCount] = useState(0);
-    
+
+    const quantities = cartItems.reduce((map, entry) => {
+        map[entry.id] = entry.quantity;
+        return map;
+    }, {});
+
     useEffect(() => {
         setCount(count+1);
         const fetchDishes = async () => {
@@ -48,45 +53,79 @@ export default function Menu ({addToCart}) {
           </div>
         </div>
         <div className="menu-grid">
-          {dishes.map((item) => (
-            <Card key={item.id} className="menu-card">
+          {dishes.map((item) => {
+            const qty = quantities[item.id] || 0;
+            const isActive = qty > 0;
+
+            return (
+            <Card key={item.id} className={`menu-card${isActive ? " menu-card--active" : ""}`}>
             <CardMedia
               component="img"
               image={item.image_url}
               alt={item.name}
             />
-        
+
             <CardContent className="menu-card-container">
               <div className="menu-tag">{item.category}</div>
-              <Typography variant="h6" component="h3">
-                {item.name}
-              </Typography>
+              <div className="menu-card-header">
+                <Typography variant="h6" component="h3">
+                  {item.name}
+                </Typography>
+                <span className="menu-price">{formatPrice(item.price)}</span>
+              </div>
               <Tooltip title={item.description}>
                 <Typography className="menu-description" variant="h6" component="h3">
                   {item.description}
                 </Typography>
               </Tooltip>
-        
-        
-              <Typography variant="body2">
+
+
+              <Typography variant="body2" className="menu-rating">
                 ⭐ {item.rating} · {t("menu.ratingSuffix")}
               </Typography>
             </CardContent>
-        
+
             <CardActions className="menu-card-footer">
-              <span className="menu-price">
-                {formatPrice(item.price)}
-              </span>
-        
-              <Button
-                variant="contained"
-                onClick={() => addToCart(item)}
-              >
-                {t("menu.addToCart")}
-              </Button>
+              {!isActive && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  onClick={() => addToCart(item)}
+                >
+                  {t("menu.addToCart")}
+                </Button>
+              )}
+              <div className={`menu-cart-row${isActive ? "" : " menu-cart-row--hidden"}`}>
+                <div className="menu-stepper">
+                  <button
+                    type="button"
+                    className="menu-stepper-btn"
+                    onClick={() => removeFromCart(item)}
+                    aria-label={t("menu.decreaseQty")}
+                  >
+                    −
+                  </button>
+                  <span key={qty} className="menu-stepper-qty">
+                    {qty}
+                  </span>
+                  <button
+                    type="button"
+                    className="menu-stepper-btn menu-stepper-btn--add"
+                    onClick={() => addToCart(item)}
+                    aria-label={t("menu.increaseQty")}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="menu-added-chip">
+                  <span key={qty} className="menu-added-icon">🛒</span>
+                  {t("menu.addedToCart")}
+                </div>
+              </div>
             </CardActions>
           </Card>
-          ))}
+            );
+          })}
         </div>
       </section>
     )

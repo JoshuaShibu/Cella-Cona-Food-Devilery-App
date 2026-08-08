@@ -247,9 +247,9 @@ export default function CartPage({ cartItems, subtotal, createOrder, clearCart }
             <p className="cart-empty">{t("cart.empty")}</p>
           ) : (
             cartItems.map((item) => (
-              <div key={item.title} className="cart-row">
+              <div key={item.id} className="cart-row">
                 <div className="cart-row-info">
-                  <h4>{item.title}</h4>
+                  <h4>{item.name}</h4>
                   <span>
                     {formatPrice(item.price)} · {t("cart.qtyShort")} {item.quantity}
                   </span>

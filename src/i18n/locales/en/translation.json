@@ -62,7 +62,10 @@
     "searchPlaceholder": "Search for dishes…",
     "search": "Search",
     "ratingSuffix": "300+ reviews",
-    "addToCart": "Add to cart"
+    "addToCart": "Add to cart",
+    "addedToCart": "Added to cart",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity"
   },
   "cart": {
     "yourCart": "Your cart",

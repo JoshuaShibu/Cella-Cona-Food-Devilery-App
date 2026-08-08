@@ -62,7 +62,10 @@
     "searchPlaceholder": "Suche nach Gerichten…",
     "search": "Suchen",
     "ratingSuffix": "300+ reviews",
-    "addToCart": "In den Warenkorb"
+    "addToCart": "In den Warenkorb",
+    "addedToCart": "Zum Warenkorb hinzugefügt",
+    "decreaseQty": "Menge verringern",
+    "increaseQty": "Menge erhöhen"
   },
   "cart": {
     "yourCart": "Dein Warenkorb",

@@ -15,16 +15,28 @@ export default function App() {
 
   const addToCart = (item) => {
     setCartItems((prev) => {
-      const existing = prev.find((entry) => entry.title === item.title);
+      const existing = prev.find((entry) => entry.id === item.id);
       if (existing) {
         return prev.map((entry) =>
-          entry.title === item.title
+          entry.id === item.id
             ? { ...entry, quantity: entry.quantity + 1 }
             : entry
         );
       }
       return [...prev, { ...item, quantity: 1 }];
     });
+  };
+
+  const removeFromCart = (item) => {
+    setCartItems((prev) =>
+      prev
+        .map((entry) =>
+          entry.id === item.id
+            ? { ...entry, quantity: entry.quantity - 1 }
+            : entry
+        )
+        .filter((entry) => entry.quantity > 0)
+    );
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -42,7 +54,7 @@ export default function App() {
           customer_email: email,
           items: items.map((item) => ({
             dish_id: item.id,
-            name: item.title,
+            name: item.name,
             unit_price: item.price,
             tag: item.tag,
             quantity: item.quantity,
@@ -82,7 +94,16 @@ export default function App() {
 
       <main>
         <Routes>
-          <Route path="/" element={<HomePage addToCart={addToCart} />} />
+          <Route
+            path="/"
+            element={
+              <HomePage
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+                cartItems={cartItems}
+              />
+            }
+          />
           <Route
             path="/cart"
             element={

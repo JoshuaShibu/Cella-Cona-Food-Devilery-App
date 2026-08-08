@@ -2,7 +2,7 @@ import Menu from "../features/menu/Menu";
 import heroDish from "../images/food-hero.jpg";
 import { useTranslation } from "react-i18next";
 
-export default function HomePage({ addToCart }) {
+export default function HomePage({ addToCart, removeFromCart, cartItems }) {
   const { t } = useTranslation();
 
   return (
@@ -82,7 +82,7 @@ export default function HomePage({ addToCart }) {
         </div>
       </section>
 
-      <Menu addToCart={addToCart} />
+      <Menu addToCart={addToCart} removeFromCart={removeFromCart} cartItems={cartItems} />
       <section className="solutions" id="solutions">
         <div className="solutions-text">
           <p className="eyebrow">{t("home.stepsEyebrow")}</p>
