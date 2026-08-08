@@ -91,6 +91,7 @@
   },
   "chat": {
     "eyebrow": "Ask for anything",
+    "whyLabel": "Why we picked this",
     "title": "What are you in the mood for?",
     "subtitle": "Describe what you're craving — diet, mood, or budget — and we'll match it to dishes on the menu.",
     "placeholder": "e.g. something light and vegan for lunch under €10",

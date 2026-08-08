@@ -92,6 +92,7 @@
   "chat": {
     "eyebrow": "Frag einfach",
     "title": "Worauf hast du Lust?",
+    "whyLabel": "Warum wir das vorschlagen",
     "subtitle": "Beschreibe, worauf du Lust hast — Ernährung, Stimmung oder Budget — und wir gleichen es mit dem Menü ab.",
     "placeholder": "z. B. etwas Leichtes und Veganes zum Mittag unter 10 €",
     "send": "Gerichte finden",
