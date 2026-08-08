@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from .database import SessionLocal, engine
 from . import models, schemas, crud, recommender
+from . import query_parser
 
 load_dotenv()
 models.Base.metadata.create_all(bind=engine)
@@ -130,6 +131,7 @@ def create_dish(payload: schemas.DishCreate, db: Session = Depends(get_db)):
     response_model=schemas.RecommendationResponse,
     tags=["recommendations"],
 )
+
 def get_recommendations(
     user_id: Optional[int] = None,
     limit: int = Query(10, ge=1, le=50),
@@ -180,6 +182,48 @@ def get_recommendations(
         "results": results,
     }
 
+
+@app.post(
+    "/recommendations/chat",
+    response_model=schemas.ChatRecommendationResponse,
+    tags=["recommendations"],
+)
+def chat_recommendations(
+    payload: schemas.ChatQuery,
+    db: Session = Depends(get_db),
+):
+    """
+    Free-text recommendations: "something light and vegan for lunch under €10".
+
+    The query is parsed into structured filters and context signals, which are
+    then fed through the same hybrid recommender used elsewhere — so chat
+    results stay consistent with the rest of the app rather than being a
+    separate ranking path.
+    """
+    parsed = query_parser.parse_query(payload.query)
+    filters = parsed["filters"]
+    ctx = parsed["context"]
+
+    results = recommender.recommend(
+        db,
+        user_id=payload.user_id,
+        limit=payload.limit,
+        meal_time=ctx.get("meal_time"),
+        weather=ctx.get("weather"),
+        query_filters=filters,
+        exclude_ordered=False,
+    )
+
+    return {
+        "query": payload.query,
+        "understood": parsed["matched"],
+        "context": {
+            "meal_time": ctx.get("meal_time") or recommender.infer_meal_time(),
+            "weather": ctx.get("weather"),
+            "filters": filters,
+        },
+        "results": results,
+    }
 
 @app.get(
     "/dishes/{dish_id}/similar",

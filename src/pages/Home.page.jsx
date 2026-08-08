@@ -1,4 +1,6 @@
 import Menu from "../features/menu/Menu";
+import RecommendSection from "../features/recomendations/RecommendSection";
+
 import heroDish from "../images/food-hero.jpg";
 import { useTranslation } from "react-i18next";
 
@@ -81,7 +83,12 @@ export default function HomePage({ addToCart, removeFromCart, cartItems }) {
           </article>
         </div>
       </section>
-
+      
+      <RecommendSection
+        addToCart={addToCart}
+        removeFromCart={removeFromCart}
+        cartItems={cartItems}
+      />
       <Menu addToCart={addToCart} removeFromCart={removeFromCart} cartItems={cartItems} />
       <section className="solutions" id="solutions">
         <div className="solutions-text">

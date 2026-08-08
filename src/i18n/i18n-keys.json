@@ -1,0 +1,87 @@
+{
+  "_comment": "Merge these into your existing en/de translation files. English shown; German suggestions in the de block below.",
+  "en": {
+    "menu": {
+      "clear": "Clear",
+      "noResults": "No dishes match your filters.",
+      "loadError": "Couldn't load the menu. Please try again."
+    },
+    "filters": {
+      "all": "All",
+      "category": "Category",
+      "cuisine": "Cuisine",
+      "sortBy": "Sort by",
+      "sortNameAsc": "Name (A–Z)",
+      "sortPriceAsc": "Price (low to high)",
+      "sortPriceDesc": "Price (high to low)",
+      "sortRatingDesc": "Top rated",
+      "sortPopular": "Most popular",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "glutenFree": "Gluten-free",
+      "spicy": "Spicy",
+      "priceRange": "Price",
+      "maxSpice": "Max spice",
+      "showing": "Showing {{count}} dishes",
+      "clearAll": "Clear filters"
+    },
+    "recommendations": {
+      "eyebrow": "Picked for you",
+      "title": "Recommended dishes",
+      "contextLine": "Based on what's good for {{mealTime}} right now"
+    },
+    "mealTimes": {
+      "breakfast": "breakfast",
+      "lunch": "lunch",
+      "dinner": "dinner",
+      "snack": "a snack"
+    },
+    "weather": {
+      "cold": "cold",
+      "mild": "mild",
+      "hot": "hot"
+    }
+  },
+  "de": {
+    "menu": {
+      "clear": "Zurücksetzen",
+      "noResults": "Keine Gerichte entsprechen deinen Filtern.",
+      "loadError": "Menü konnte nicht geladen werden. Bitte versuche es erneut."
+    },
+    "filters": {
+      "all": "Alle",
+      "category": "Kategorie",
+      "cuisine": "Küche",
+      "sortBy": "Sortieren nach",
+      "sortNameAsc": "Name (A–Z)",
+      "sortPriceAsc": "Preis (aufsteigend)",
+      "sortPriceDesc": "Preis (absteigend)",
+      "sortRatingDesc": "Bestbewertet",
+      "sortPopular": "Beliebteste",
+      "vegetarian": "Vegetarisch",
+      "vegan": "Vegan",
+      "glutenFree": "Glutenfrei",
+      "spicy": "Scharf",
+      "priceRange": "Preis",
+      "maxSpice": "Max. Schärfe",
+      "showing": "{{count}} Gerichte",
+      "clearAll": "Filter zurücksetzen"
+    },
+    "recommendations": {
+      "eyebrow": "Für dich ausgewählt",
+      "title": "Empfohlene Gerichte",
+      "contextLine": "Passend für {{mealTime}} gerade jetzt"
+    },
+    "mealTimes": {
+      "breakfast": "Frühstück",
+      "lunch": "Mittagessen",
+      "dinner": "Abendessen",
+      "snack": "einen Snack"
+    },
+    "weather": {
+      "cold": "kalt",
+      "mild": "mild",
+      "hot": "heiß"
+    }
+  }
+}

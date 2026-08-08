@@ -1,3 +1,5 @@
+@import "./components/filterBar/filters.css";
+
 :root {
   color-scheme: light;
   --bg: #f7f4ee;
@@ -405,6 +407,7 @@ input {
 
 .features,
 .menu,
+.rec-teaser,
 .solutions {
   padding: 0 60px;
   margin: 40px;
@@ -1104,6 +1107,7 @@ input {
   .trust,
   .features,
   .menu,
+  .rec-teaser,
   .solutions,
   .cta,
   .site-footer {

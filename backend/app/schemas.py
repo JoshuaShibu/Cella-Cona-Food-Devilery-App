@@ -142,6 +142,18 @@ class SimilarDish(BaseModel):
     dish: Dish
     score: float
 
+class ChatQuery(BaseModel):
+    query: str
+    user_id: Optional[int] = None
+    limit: int = 8
+
+
+class ChatRecommendationResponse(BaseModel):
+    query: str
+    understood: List[str]
+    context: dict
+    results: List[Recommendation]
+
 
 # ----------------------------------------------------------------------
 # Orders

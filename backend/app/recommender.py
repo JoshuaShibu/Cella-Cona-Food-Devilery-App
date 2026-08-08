@@ -261,6 +261,45 @@ def context_multiplier(
 # Public API
 # ----------------------------------------------------------------------
 
+def passes_query_filters(dish, filters: dict | None) -> bool:
+    """Apply ad-hoc filters parsed from a free-text chat query."""
+    if not filters:
+        return True
+
+    if filters.get("is_vegan") and not dish.is_vegan:
+        return False
+    if filters.get("is_vegetarian") and not dish.is_vegetarian:
+        return False
+    if filters.get("is_gluten_free") and not dish.is_gluten_free:
+        return False
+    if filters.get("category") and dish.category != filters["category"]:
+        return False
+    if filters.get("cuisine") and dish.cuisine != filters["cuisine"]:
+        return False
+    if filters.get("max_price") and dish.price > filters["max_price"]:
+        return False
+    if filters.get("min_rating") and (dish.rating or 0) < filters["min_rating"]:
+        return False
+    if filters.get("max_spice") and dish.spice_level > filters["max_spice"]:
+        return False
+    if filters.get("min_spice") and dish.spice_level < filters["min_spice"]:
+        return False
+
+    details = dish.details
+    if filters.get("max_calories"):
+        if not details or (details.calories or 0) > filters["max_calories"]:
+            return False
+    if filters.get("min_calories"):
+        if not details or (details.calories or 0) < filters["min_calories"]:
+            return False
+    if filters.get("max_prep_time"):
+        if not details or (details.prep_time_minutes or 99) > filters["max_prep_time"]:
+            return False
+
+    return True
+
+
+
 def recommend(
     db: Session,
     user_id: int | None = None,
@@ -269,7 +308,8 @@ def recommend(
     weather: str | None = None,
     temp_celsius: float | None = None,
     day_of_week: int | None = None,
-    exclude_ordered: bool = True,
+    exclude_ordered: bool = True, 
+    query_filters: dict | None = None,
 ) -> list[dict]:
     """
     Return ranked recommendations with a per-dish explanation of *why* it was
@@ -287,7 +327,10 @@ def recommend(
     )
 
     all_dishes = db.query(models.Dish).all()
-    candidates = [d for d in all_dishes if passes_constraints(d, user)]
+    candidates = [
+        d for d in all_dishes
+        if passes_constraints(d, user) and passes_query_filters(d, query_filters)
+    ]
     if not candidates:
         return []
 
