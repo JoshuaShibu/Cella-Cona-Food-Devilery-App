@@ -98,13 +98,13 @@
 }
 
 .rec-chat-head {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: nowrap;
+  position: relative !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  flex-wrap: nowrap !important;
   gap: 1rem;
   margin-bottom: 1.35rem;
-  padding-right: 2.75rem;
+  padding-right: 2.75rem !important;
 }
 
 .rec-chat-head-text {
@@ -131,9 +131,13 @@
 }
 
 .rec-drawer-close {
-  position: absolute;
-  top: 0;
-  right: 0;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  flex: none !important;
   border: none;
   background: rgba(216, 90, 48, 0.16);
   color: #e2753f;
@@ -381,6 +385,41 @@
 
 .rec-dish-info .menu-card-footer {
   margin-top: 0.15rem;
+}
+
+.rec-dish-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 0 0 auto;
+}
+
+.rec-dish-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e2a53f;
+}
+
+.rec-dish-rating .MuiSvgIcon-root {
+  font-size: 0.95rem;
+}
+
+.recommendation-reasons-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.rec-why-label {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.5;
 }
 
 .recommendation-reasons {

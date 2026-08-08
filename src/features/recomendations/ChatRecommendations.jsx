@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Typography, Button, Chip } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
+import StarIcon from "@mui/icons-material/Star";
 import { useTranslation } from "react-i18next";
 import { recTheme } from "./recTheme";
 
@@ -236,21 +237,36 @@ export default function ChatRecommendations({
                         <Typography variant="subtitle1" component="h3">
                           {dish.name}
                         </Typography>
-                        <span className="menu-price">
-                          {formatPrice(dish.price)}
-                        </span>
+                        <div className="rec-dish-meta">
+                          {dish.rating != null && (
+                            <span className="rec-dish-rating">
+                              <StarIcon fontSize="inherit" />
+                              {dish.rating.toFixed(1)}
+                            </span>
+                          )}
+                          <span className="menu-price">
+                            {formatPrice(dish.price)}
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="recommendation-reasons">
-                        {reasons.map((reason) => (
-                          <Chip
-                            key={reason}
-                            label={reason}
-                            size="small"
-                            variant="outlined"
-                          />
-                        ))}
-                      </div>
+                      {reasons.length > 0 && (
+                        <div className="recommendation-reasons-block">
+                          <p className="rec-why-label">
+                            {t("chat.whyLabel")}
+                          </p>
+                          <div className="recommendation-reasons">
+                            {reasons.map((reason) => (
+                              <Chip
+                                key={reason}
+                                label={reason}
+                                size="small"
+                                variant="outlined"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="menu-card-footer">
                         {!isActive && (
