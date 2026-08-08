@@ -4,6 +4,10 @@ from typing import List, Optional
 from pydantic import BaseModel, EmailStr
 
 
+# ----------------------------------------------------------------------
+# Dish
+# ----------------------------------------------------------------------
+
 class DishDetailBase(BaseModel):
     calories: Optional[int] = None
     ingredients: Optional[str] = None
@@ -28,10 +32,19 @@ class DishBase(BaseModel):
     description: Optional[str] = None
     price: float
     category: Optional[str] = None
+    cuisine: Optional[str] = None
     rating: Optional[float] = None
     tag: Optional[str] = None
+    tags: Optional[str] = None
     image_url: Optional[str] = None
     is_available: bool = True
+    spice_level: int = 1
+    is_vegetarian: bool = False
+    is_vegan: bool = False
+    is_gluten_free: bool = False
+    meal_times: Optional[str] = None
+    temp_affinity: Optional[str] = None
+    order_count: int = 0
 
 
 class DishCreate(DishBase):
@@ -45,6 +58,94 @@ class Dish(DishBase):
     class Config:
         from_attributes = True
 
+
+# ----------------------------------------------------------------------
+# User
+# ----------------------------------------------------------------------
+
+class UserBase(BaseModel):
+    name: str
+    email: EmailStr
+    is_vegetarian: bool = False
+    is_vegan: bool = False
+    needs_gluten_free: bool = False
+    allergens: Optional[str] = None
+    spice_tolerance: int = 3
+    avg_budget: float = 11.0
+
+
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# ----------------------------------------------------------------------
+# Interaction
+# ----------------------------------------------------------------------
+
+class InteractionCreate(BaseModel):
+    user_id: int
+    dish_id: int
+    rating: Optional[float] = None
+    quantity: int = 1
+    meal_time: Optional[str] = None
+    weather: Optional[str] = None
+
+
+class Interaction(BaseModel):
+    id: int
+    user_id: int
+    dish_id: int
+    rating: Optional[float] = None
+    quantity: int
+    ordered_at: datetime
+    meal_time: Optional[str] = None
+    day_of_week: Optional[int] = None
+    weather: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ----------------------------------------------------------------------
+# Recommendations
+# ----------------------------------------------------------------------
+
+class RecommendationSignals(BaseModel):
+    content: float
+    collaborative: float
+    popularity: float
+    context_multiplier: float
+
+
+class Recommendation(BaseModel):
+    dish: Dish
+    score: float
+    reasons: List[str]
+    signals: RecommendationSignals
+
+
+class RecommendationResponse(BaseModel):
+    context: dict
+    strategy: str
+    results: List[Recommendation]
+
+
+class SimilarDish(BaseModel):
+    dish: Dish
+    score: float
+
+
+# ----------------------------------------------------------------------
+# Orders
+# ----------------------------------------------------------------------
 
 class OrderItemBase(BaseModel):
     dish_id: Optional[int] = None
